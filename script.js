@@ -61,18 +61,91 @@ const users = [
     }
 ]
 
-// Пример вставки робота в контейнер
+class Robot {
+    constructor({ id, name, username, email }) {
+        this.id = id
+        this.name = name
+        this.username = username
+        this.email = email
+    }
 
-const cards = document.querySelector(".cards")
+    append(target) {
+        if (typeof target === 'string') {
+            target = document.querySelector(target)
+        }
+        target.insertAdjacentHTML('beforeend', 
+            `
+                <li class="card">
+                    <img class="card__avatar" alt="image-${this.id}" src="https://robohash.org/${this.id}?size=300x300" />
+                    <div class="card__description">
+                        <h3 class="card__name">${this.name}</h3>
+                        <p class="card__email">${this.email}</p>
+                    </div>
+                </li>
+            `
+        )
+    }
+}
 
-cards.insertAdjacentHTML('beforeend', 
+function render(users) {
+    const cards = document.querySelector('.cards')
+    const form = cards.firstElementChild
+    cards.innerHTML = ''
+    cards.append(form)
+
+    if (users.length) {
+        users.forEach(user => {
+            let robot = new Robot(user)
+            robot.append(cards)
+        })
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    render(users)
+})
+
+const search = document.querySelector(".search")
+search.oninput = (event) => {
+    let value = event.target.value.toLowerCase()
+    let filteredRobots = users.filter(user => {
+        return (user.name.toLowerCase().includes(value) || 
+                user.username.toLowerCase().includes(value) || 
+                user.email.toLowerCase().includes(value))
+    })
+    render(filteredRobots)
+} 
+
+let form = document.querySelector("form")
+
+form.onsubmit = (event) => {
+    event.preventDefault()
+
+    let name = event.target.name.value
+    let username = event.target.username.value
+    let email = event.target.email.value
+
+    users.push({
+        id: users[users.length - 1].id + 1,
+        name,
+        username,
+        email
+    })
+
+    render(users)
+
+    event.target.name.value = ''
+    event.target.username.value = ''
+    event.target.email.value = ''
+}
+
+function changeColor() {
+    document.body.style.background = `
+    linear-gradient(to top right, 
+        rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}), 
+        rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}))
     `
-        <li class="card">
-            <img class="card__avatar" src="https://robohash.org/${users[0].id}?size=300x300" />
-            <div class="card__description">
-                <h3 class="card__name">${users[0].name}</h3>
-                <p class="card__email">${users[0].email}</p>
-            </div>
-        </li>
-    `
-)
+}
+
+const changeColorButton = document.querySelector('.change-color')
+changeColorButton.onclick = changeColor
