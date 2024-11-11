@@ -103,19 +103,31 @@ function render(users) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    // render(users)
-    fetch('https://jsonplaceholder.typicode.com/users')
-        .then(response => response.json())
-        .then(data => {
-            users = data
-            return users
-        })
-        .then(render)
-        .catch(error => {
-            console.log(error)
-            alert("Что-то пошло не так...")
-        })
+// document.addEventListener("DOMContentLoaded", () => {
+//     // render(users)
+//     fetch('https://jsonplaceholder.typicode.com/users')
+//         .then(response => response.json())
+//         .then(data => {
+//             users = data
+//             return users
+//         })
+//         .then(render)
+//         .catch(error => {
+//             console.log(error)
+//             alert("Что-то пошло не так...")
+//         })
+// })
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        let response = await fetch('https://jsonplaceholder.typicode.com/users')
+        let data = await response.json()
+        users = data
+        render(users)
+    } catch(e) {
+        console.log(e)
+        alert("Что-то пошло не так...")
+    }
 })
 
 const search = document.querySelector(".search")
@@ -137,7 +149,7 @@ form.onsubmit = (event) => {
     let name = event.target.name.value
     let username = event.target.username.value
     let email = event.target.email.value
-
+ 
     users.push({
         id: users[users.length - 1].id + 1,
         name,
